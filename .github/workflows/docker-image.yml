@@ -3,8 +3,8 @@ name: Build and Push Docker Image
 # 当 push 到 main 分支 或 手动触发时执行
 on:
   push:
-    branches:
-      - "main"
+    tags:
+      - 'release_v*'
   workflow_dispatch:
 
 jobs:
