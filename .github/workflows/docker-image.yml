@@ -26,18 +26,18 @@ jobs:
       # 3）构建 Docker 镜像
       - name: Build image
         run: |
-          IMAGE="${{ secrets.DOCKER_REGISTRY }}/new-api:${{ github.sha }}"
+          IMAGE="${{ secrets.DOCKER_REGISTRY }}/my-com-docker/new-api:${{ github.sha }}"
           docker build -t $IMAGE .
 
       # 4）给镜像打 latest tag
       - name: Tag image with latest
         run: |
-          IMAGE="${{ secrets.DOCKER_REGISTRY }}/new-api"
+          IMAGE="${{ secrets.DOCKER_REGISTRY }}/my-com-docker/new-api"
           docker tag $IMAGE:${{ github.sha }} $IMAGE:latest
 
       # 5）推送镜像到仓库
       - name: Push image
         run: |
-          IMAGE="${{ secrets.DOCKER_REGISTRY }}/new-api"
+          IMAGE="${{ secrets.DOCKER_REGISTRY }}/my-com-docker/new-api"
           docker push $IMAGE:${{ github.sha }}
           docker push $IMAGE:latest
