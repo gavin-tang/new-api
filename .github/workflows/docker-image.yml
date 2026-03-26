@@ -1,0 +1,41 @@
+name: Build and Push Docker Image
+
+# 当 push 到 main 分支 或 手动触发时执行
+on:
+  push:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1）检出代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2）设置 Docker 登录凭据
+      - name: Log in to Docker Registry
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTRY }} -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+
+      # 3）构建 Docker 镜像
+      - name: Build image
+        run: |
+          IMAGE="${{ secrets.DOCKER_REGISTRY }}/my-com-docker/new-api:${{ github.sha }}"
+          docker build -t $IMAGE .
+
+      # 4）给镜像打 latest tag
+      - name: Tag image with latest
+        run: |
+          IMAGE="${{ secrets.DOCKER_REGISTRY }}/my-com-docker/new-api"
+          docker tag $IMAGE:${{ github.sha }} $IMAGE:latest
+
+      # 5）推送镜像到仓库
+      - name: Push image
+        run: |
+          IMAGE="${{ secrets.DOCKER_REGISTRY }}/my-com-docker/new-api"
+          docker push $IMAGE:${{ github.sha }}
+          docker push $IMAGE:latest
